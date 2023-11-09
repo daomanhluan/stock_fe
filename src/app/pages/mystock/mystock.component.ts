@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FindStockRequest } from 'src/app/models/StockHistory.model';
 import {StockService} from 'src/app/stock.service'
 @Component({
   selector: 'app-mystock',
@@ -66,20 +67,36 @@ export class MystockComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    this.listOfData = new Array(200).fill(0).map((_, index) => ({
+    this.listOfData = new Array(35).fill(0).map((_, index) => ({
       id: index,
-      name: `Edward King ${index}`,
-      age: 32,
-      address: `London, Park Lane no. ${index}`
+      code: `SSI`,
+      currentPrice: 32,
+      average10Price: 29,
+      average20Price: 29,
+      average50Price: 29,
+      average200Price: 29
     }));
 
-    console.log("res: "+JSON.stringify((this.stockService.get())));
+    let req = {
+      "page":1,
+      "size":10,
+      "day":"08/11/2023"
+    }
+
+    this.stockService.get();
+    this.stockService.findStock(req).subscribe((res)=>{
+      console.log("findStock: "+res);
+
+    });
   }
 }
 
 interface ItemData {
   id: number;
-  name: string;
-  age: number;
-  address: string;
+  code: string;
+  currentPrice: number;
+  average10Price: number;
+  average20Price: number;
+  average50Price: number;
+  average200Price: number;
 }

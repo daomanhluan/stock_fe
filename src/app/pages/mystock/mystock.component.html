@@ -12,17 +12,25 @@
             [nzIndeterminate]="indeterminate"
             (nzCheckedChange)="onAllChecked($event)"
           ></th>
-          <th>Name</th>
-          <th>Age</th>
-          <th>Address</th>
+          <th>#</th>
+          <th>Cổ phiếu</th>
+          <th>Giá hiện tại</th>
+          <th>Giá TB 10p (% tăng)</th>
+          <th>Giá TB 20p (% tăng)</th>
+          <th>Giá TB 50p (% tăng)</th>
+          <th>Giá TB 200p (% tăng)</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let data of rowSelectionTable.data">
           <td [nzChecked]="setOfCheckedId.has(data.id)" (nzCheckedChange)="onItemChecked(data.id, $event)"></td>
-          <td>{{ data.name }}</td>
-          <td>{{ data.age }}</td>
-          <td>{{ data.address }}</td>
+          <td>{{ data.id }}</td>
+          <td>{{ data.code }}</td>
+          <td>{{ data.currentPrice }}</td>
+          <td>{{ data.average10Price }}</td>
+          <td>{{ data.average20Price }}</td>
+          <td>{{ data.average50Price }}</td>
+          <td>{{ data.average200Price }}</td>
         </tr>
       </tbody>
     </nz-table>

@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import {Product} from '../app/models/Product.model';
+import {FindStockRequest, ObjectRecords, StockHistory, TemplateResponse} from './models/StockHistory.model';
 import { Observable } from 'rxjs';
 
 const headers = new HttpHeaders();
@@ -11,17 +11,16 @@ const headers = new HttpHeaders();
   providedIn: 'root'
 })
 export class StockService {
-  apiUrl = 'localhost:8080/api/v1/test/hi';
+  apiUrl = 'http://localhost:8080/api/v1/stock/find-hot-stock';
   constructor(private httpClient:HttpClient) { }
 
 
   public get(options?: any) {
-    return this.httpClient.get(this.apiUrl, {headers: headers}).subscribe((data:any)=>{
-      console.log("OK");
-    });
+    return this.httpClient.get("http://localhost:8080/api/v1/test/hi").subscribe((response) => { console.log(response); },
+    (error) => { console.log(error); });
     }
-  getAll():Observable<Product[]>{
-    return this.httpClient.get<Product[]>(this.apiUrl).pipe(
-    )
+
+  findStock(request:FindStockRequest):Observable<any>{
+    return this.httpClient.post(this.apiUrl, request);
   }
 }
