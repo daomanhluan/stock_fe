@@ -1,42 +1,54 @@
 import { Component, OnInit } from '@angular/core';
 import { FindStockRequest } from 'src/app/models/StockHistory.model';
-import {StockService} from 'src/app/stock.service'
+import { StockService } from 'src/app/stock.service';
 @Component({
   selector: 'app-mystock',
   templateUrl: './mystock.component.html',
-  styleUrls: ['./mystock.component.scss']
+  styleUrls: ['./mystock.component.scss'],
 })
-export class MystockComponent implements OnInit{
-
-  constructor(private stockService: StockService) { }
+export class MystockComponent implements OnInit {
+  constructor(private stockService: StockService) {}
 
   listOfSelection = [
     {
       text: 'Select All Row',
       onSelect: () => {
         this.onAllChecked(true);
-      }
+      },
     },
     {
       text: 'Select Odd Row',
       onSelect: () => {
-        this.listOfCurrentPageData.forEach((data, index) => this.updateCheckedSet(data.id, index % 2 !== 0));
+        this.listOfCurrentPageData.forEach((data, index) =>
+          this.updateCheckedSet(data.id, index % 2 !== 0)
+        );
         this.refreshCheckedStatus();
-      }
+      },
     },
     {
       text: 'Select Even Row',
       onSelect: () => {
-        this.listOfCurrentPageData.forEach((data, index) => this.updateCheckedSet(data.id, index % 2 === 0));
+        this.listOfCurrentPageData.forEach((data, index) =>
+          this.updateCheckedSet(data.id, index % 2 === 0)
+        );
         this.refreshCheckedStatus();
-      }
-    }
+      },
+    },
   ];
   checked = false;
   indeterminate = false;
   listOfCurrentPageData: readonly ItemData[] = [];
   listOfData: readonly ItemData[] = [];
   setOfCheckedId = new Set<number>();
+  products: any = {
+    data: [],
+    total: 0,
+  };
+  pageSize = 10;
+  filter = {
+    limit: 10,
+    skip: 0,
+  };
 
   updateCheckedSet(id: number, checked: boolean): void {
     if (checked) {
@@ -52,7 +64,9 @@ export class MystockComponent implements OnInit{
   }
 
   onAllChecked(value: boolean): void {
-    this.listOfCurrentPageData.forEach(item => this.updateCheckedSet(item.id, value));
+    this.listOfCurrentPageData.forEach((item) =>
+      this.updateCheckedSet(item.id, value)
+    );
     this.refreshCheckedStatus();
   }
 
@@ -62,8 +76,13 @@ export class MystockComponent implements OnInit{
   }
 
   refreshCheckedStatus(): void {
-    this.checked = this.listOfCurrentPageData.every(item => this.setOfCheckedId.has(item.id));
-    this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedId.has(item.id)) && !this.checked;
+    this.checked = this.listOfCurrentPageData.every((item) =>
+      this.setOfCheckedId.has(item.id)
+    );
+    this.indeterminate =
+      this.listOfCurrentPageData.some((item) =>
+        this.setOfCheckedId.has(item.id)
+      ) && !this.checked;
   }
 
   ngOnInit(): void {
@@ -74,19 +93,13 @@ export class MystockComponent implements OnInit{
       average10Price: 29,
       average20Price: 29,
       average50Price: 29,
-      average200Price: 29
+      average200Price: 29,
     }));
 
-    let req = {
-      "page":1,
-      "size":10,
-      "day":"08/11/2023"
-    }
-
-    this.stockService.get();
-    this.stockService.findStock(req).subscribe((res)=>{
-      console.log("findStock: "+res);
-
+    this.stockService.findProject().subscribe((res: any) => {
+      this.products.total = res?.total;
+      this.products.data = res?.products;
+      console.log(this.products.total);
     });
   }
 }
