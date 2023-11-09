@@ -1,4 +1,4 @@
-<nz-table
+<!-- <nz-table
       #rowSelectionTable
       nzShowSizeChanger
       [nzData]="listOfData"
@@ -33,4 +33,29 @@
           <td>{{ data.average200Price }}</td>
         </tr>
       </tbody>
-    </nz-table>
+    </nz-table> -->
+
+<nz-table #rowSelectionTable [nzData]="products.data" [nzTotal]="products.total" [nzPageSize]="10" [nzPageIndex]="1">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>title</th>
+      <th>brand</th>
+      <th>category</th>
+      <th>description</th>
+      <th>price</th>
+      <th>rating</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of rowSelectionTable.data">
+      <td>{{ data?.id }}</td>
+      <td>{{ data?.title }}</td>
+      <td>{{ data?.brand }}</td>
+      <td>{{ data?.category }}</td>
+      <td>{{ data?.description }}</td>
+      <td>{{ data?.price }}</td>
+      <td>{{ data?.rating }}</td>
+    </tr>
+  </tbody>
+</nz-table>
