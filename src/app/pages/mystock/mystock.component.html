@@ -1,36 +1,44 @@
-<nz-table
-      #rowSelectionTable
-      nzShowSizeChanger
-      [nzData]="listOfData"
-      (nzCurrentPageDataChange)="onCurrentPageDataChange($event)"
-    >
-      <thead>
-        <tr>
-          <th
-            [nzSelections]="listOfSelection"
-            [(nzChecked)]="checked"
-            [nzIndeterminate]="indeterminate"
-            (nzCheckedChange)="onAllChecked($event)"
-          ></th>
-          <th>#</th>
-          <th>Cổ phiếu</th>
-          <th>Giá hiện tại</th>
-          <th>Giá TB 10p (% tăng)</th>
-          <th>Giá TB 20p (% tăng)</th>
-          <th>Giá TB 50p (% tăng)</th>
-          <th>Giá TB 200p (% tăng)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of rowSelectionTable.data">
-          <td [nzChecked]="setOfCheckedId.has(data.id)" (nzCheckedChange)="onItemChecked(data.id, $event)"></td>
-          <td>{{ data.id }}</td>
-          <td>{{ data.code }}</td>
-          <td>{{ data.currentPrice }}</td>
-          <td>{{ data.average10Price }}</td>
-          <td>{{ data.average20Price }}</td>
-          <td>{{ data.average50Price }}</td>
-          <td>{{ data.average200Price }}</td>
-        </tr>
-      </tbody>
-    </nz-table>
+<nz-select [(ngModel)]="singleValue" [nzSize]="sizes">
+  <nz-option *ngFor="let option of listOfOption" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+</nz-select>
+<br />
+<br />
+<nz-select [(ngModel)]="singleValue" [nzSize]="sizes" nzShowSearch>
+  <nz-option *ngFor="let option of listOfOption" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+</nz-select>
+<br />
+<br />
+<nz-select [(ngModel)]="multipleValue" [nzSize]="sizes" nzMode="multiple" nzPlaceHolder="Please select">
+  <nz-option *ngFor="let option of listOfOption" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+</nz-select>
+
+
+<nz-table #rowSelectionTable [nzData]="stockHistories" nzShowPagination nzShowSizeChanger [nzTotal]="total"
+  [nzPageIndex]="page" [nzPageSize]="size" [nzFrontPagination]="false" (nzPageIndexChange)="changePage($event)"
+  (nzPageSizeChange) = "changeSize($event)">
+  <thead>
+    <tr>
+      <th [nzSelections]="listOfSelection" [(nzChecked)]="checked" [nzIndeterminate]="indeterminate"
+        (nzCheckedChange)="onAllChecked($event)"></th>
+      <th>#</th>
+      <th>Cổ phiếu</th>
+      <th>Giá hiện tại</th>
+      <th>Giá TB 10p (% tăng)</th>
+      <th>Giá TB 20p (% tăng)</th>
+      <th>Giá TB 50p (% tăng)</th>
+      <th>Giá TB 200p (% tăng)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of rowSelectionTable.data">
+      <td [nzChecked]="setOfCheckedId.has(data.id)" (nzCheckedChange)="onItemChecked(data.id, $event)"></td>
+      <td>{{ data.id }}</td>
+      <td>{{ data.code }}</td>
+      <td>{{ data.closed_price }}</td>
+      <td>{{ data.average_data_statistic_yesterday.average_price10_day }}</td>
+      <td>{{ data.average_data_statistic_yesterday.average_price20_day }}</td>
+      <td>{{ data.average_data_statistic_yesterday.average_price50ay }}</td>
+      <td>{{ data.average_data_statistic_yesterday.average_price200_day }}</td>
+    </tr>
+  </tbody>
+</nz-table>

@@ -1,42 +1,65 @@
 import { Component, OnInit } from '@angular/core';
-import { FindStockRequest } from 'src/app/models/StockHistory.model';
-import {StockService} from 'src/app/stock.service'
+import { NzSelectSizeType } from 'ng-zorro-antd/select';
+import {
+  FindStockRequest,
+  ObjectRecords,
+  StockHistory,
+  TemplateResponse,
+} from 'src/app/models/StockHistory.model';
+import { StockService } from 'src/app/stock.service';
 @Component({
   selector: 'app-mystock',
   templateUrl: './mystock.component.html',
-  styleUrls: ['./mystock.component.scss']
+  styleUrls: ['./mystock.component.scss'],
 })
-export class MystockComponent implements OnInit{
-
-  constructor(private stockService: StockService) { }
+export class MystockComponent implements OnInit {
+  constructor(private stockService: StockService) {}
 
   listOfSelection = [
     {
       text: 'Select All Row',
       onSelect: () => {
-        this.onAllChecked(true);
-      }
+        // this.onAllChecked(true);
+      },
     },
     {
       text: 'Select Odd Row',
       onSelect: () => {
-        this.listOfCurrentPageData.forEach((data, index) => this.updateCheckedSet(data.id, index % 2 !== 0));
-        this.refreshCheckedStatus();
-      }
+        this.stockHistories.forEach((data, index) =>
+          this.updateCheckedSet(data.id, index % 2 !== 0)
+        );
+        // this.refreshCheckedStatus();
+      },
     },
     {
       text: 'Select Even Row',
       onSelect: () => {
-        this.listOfCurrentPageData.forEach((data, index) => this.updateCheckedSet(data.id, index % 2 === 0));
-        this.refreshCheckedStatus();
-      }
-    }
+        this.stockHistories.forEach((data, index) =>
+          this.updateCheckedSet(data.id, index % 2 === 0)
+        );
+        // this.refreshCheckedStatus();
+      },
+    },
   ];
   checked = false;
   indeterminate = false;
-  listOfCurrentPageData: readonly ItemData[] = [];
-  listOfData: readonly ItemData[] = [];
+  // listOfCurrentPageData: readonly ItemData[] = [];
+  // listOfData: readonly ItemData[] = [];
   setOfCheckedId = new Set<number>();
+
+  responseStockHistory: TemplateResponse<ObjectRecords<StockHistory[]>>;
+  objectRecordsStockHistory: ObjectRecords<StockHistory[]>;
+  stockHistories: StockHistory[];
+  total: number = 0;
+  page: number = 1;
+  size: number = 10;
+
+
+  listOfOption: Array<{ label: string; value: string }> = [];
+  sizes: NzSelectSizeType = 'default';
+  singleValue = 'a10';
+  multipleValue = ['a10', 'c12'];
+  tagValue = ['a10', 'c12', 'tag'];
 
   updateCheckedSet(id: number, checked: boolean): void {
     if (checked) {
@@ -52,51 +75,69 @@ export class MystockComponent implements OnInit{
   }
 
   onAllChecked(value: boolean): void {
-    this.listOfCurrentPageData.forEach(item => this.updateCheckedSet(item.id, value));
-    this.refreshCheckedStatus();
-  }
-
-  onCurrentPageDataChange($event: readonly ItemData[]): void {
-    this.listOfCurrentPageData = $event;
+    this.stockHistories.forEach((item) =>
+      this.updateCheckedSet(item.id, value)
+    );
     this.refreshCheckedStatus();
   }
 
   refreshCheckedStatus(): void {
-    this.checked = this.listOfCurrentPageData.every(item => this.setOfCheckedId.has(item.id));
-    this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedId.has(item.id)) && !this.checked;
+    this.checked = this.stockHistories.every((item) =>
+      this.setOfCheckedId.has(item.id)
+    );
+    this.indeterminate =
+      this.stockHistories.some((item) =>
+        this.setOfCheckedId.has(item.id)
+      ) && !this.checked;
   }
 
-  ngOnInit(): void {
-    this.listOfData = new Array(35).fill(0).map((_, index) => ({
-      id: index,
-      code: `SSI`,
-      currentPrice: 32,
-      average10Price: 29,
-      average20Price: 29,
-      average50Price: 29,
-      average200Price: 29
-    }));
-
+  changePage(e:number):void {
+    this.page = e;
     let req = {
-      "page":1,
-      "size":10,
-      "day":"08/11/2023"
-    }
+      page: this.page,
+      size: this.size,
+      day: '08/11/2023',
+    };
+    this.loadData(req);
+  }
 
-    this.stockService.get();
-    this.stockService.findStock(req).subscribe((res)=>{
-      console.log("findStock: "+res);
+  changeSize(e:number):void {
+    this.size = e;
+    this.page = 1;
+    let req = {
+      page: this.page,
+      size: this.size,
+      day: '08/11/2023',
+    };
+    this.loadData(req);
+  }
+
+  loadData(req: FindStockRequest){
+    this.stockService.findStock(req).subscribe((res) => {
+      console.log('findStock: ' + res.success);
+      this.responseStockHistory = res;
+      this.objectRecordsStockHistory = this.responseStockHistory.data!;
+      this.stockHistories = this.objectRecordsStockHistory.records!;
+      this.total = this.objectRecordsStockHistory.total ? this.objectRecordsStockHistory.total : 0;
 
     });
   }
+
+  ngOnInit(): void {
+    let req = {
+      page: this.page,
+      size: this.size,
+      day: '08/11/2023',
+    };
+    this.loadData(req);
+
+
+    const children: Array<{ label: string; value: string }> = [];
+    for (let i = 10; i < 36; i++) {
+      children.push({ label: i.toString(36) + i, value: i.toString(36) + i });
+    }
+    this.listOfOption = children;
+  }
 }
 
-interface ItemData {
-  id: number;
-  code: string;
-  currentPrice: number;
-  average10Price: number;
-  average20Price: number;
-  average50Price: number;
-  average200Price: number;
-}
+

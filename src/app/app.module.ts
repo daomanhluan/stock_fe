@@ -74,7 +74,6 @@ import { NzTimePickerModule } from 'ng-zorro-antd/time-picker';
 import { NzTimelineModule } from 'ng-zorro-antd/timeline';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTransferModule } from 'ng-zorro-antd/transfer';
-
 registerLocaleData(en);
 
 @NgModule({
@@ -152,8 +151,7 @@ registerLocaleData(en);
     NzTimelineModule,
     NzToolTipModule,
     NzTransButtonModule,
-    NzTransferModule
-
+    NzTransferModule,
   ],
   providers: [
     { provide: NZ_I18N, useValue: en_US }
