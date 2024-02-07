@@ -1,26 +1,15 @@
 
-<!-- [(ngModel)]="date" (ngModelChange)="onChange($event)" -->
-<nz-date-picker [(ngModel)]="date" (ngModelChange)="onChange($event)" ></nz-date-picker>
 
-    <button nz-button nzType="primary"(click)="clickTimKiem()" style="left: 80px;">
-      <span nz-icon nzType="search"></span>
-      Tìm kiếm
-    </button>
-
-  <br>
-  <br>
-
-<h3>Tổng số mã CP: {{total}}</h3>
+<h3>Tổng số CP: {{total}}</h3>
 
 <nz-table #rowSelectionTable [nzData]="stockHistories" nzShowPagination nzShowSizeChanger [nzTotal]="total"
   [nzPageIndex]="page" [nzPageSize]="size" [nzFrontPagination]="false" (nzPageIndexChange)="changePage($event)"
   (nzPageSizeChange) = "changeSize($event)">
   <thead>
     <tr>
-      <th [(nzChecked)]="checked" [nzIndeterminate]="indeterminate"
-        ></th>
       <th>#</th>
-      <th>Cổ phiếu</th>
+      <th>Mã CP</th>
+      <th>Ngày</th>
       <th>Giá hiện tại</th>
       <th>+/-(%)</th>
       <th>Tổng KL</th>
@@ -31,9 +20,9 @@
   </thead>
   <tbody>
     <tr *ngFor="let data of rowSelectionTable.data; index as idx">
-      <td [nzChecked]="data.stock_follow" (nzCheckedChange)="onItemChecked(data.code, $event)"></td>
       <td>{{ idx + 1 }}</td>
-      <td><a href="http://localhost:4200/detail/{{data.code}}">{{ data.code }}</a></td>
+      <td>{{ data.code }}</td>
+      <td>{{ data.day }}</td>
       <td [ngStyle]="{'color': data.color }">{{ data.closed_price }}</td>
       <td [ngStyle]="{'color': data.color }">{{ data.price_fluctuation }}%</td>
       <td>{{ data.volume_str }}</td>

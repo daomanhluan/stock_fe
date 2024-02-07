@@ -1,0 +1,20 @@
+<!--  -->
+<nz-date-picker></nz-date-picker>
+<button nz-button nzType="primary" [(ngModel)]="date" (ngModelChange)="onChange($event)" (click)="syncAllStockByTime()"
+  style="left: 80px;">
+  <span nz-icon nzType="search"></span>
+  Đồng bộ toàn bộ CP theo thời gian
+</button>
+<br>
+<br>
+<!--  -->
+<nz-input-group nzSearch nzSize="default" [nzAddOnAfter]="suffixButton" style="width: 500px;">
+  <input type="text" nz-input placeholder="input search text" />
+</nz-input-group>
+<ng-template #suffixButton>
+  <button nz-button nzType="primary" nzSize="large" nzSearch>Đồng bộ CP</button>
+</ng-template>
+
+
+<nz-spin nzTip="Đang đồng bộ..." *ngIf="isShowLoading">
+</nz-spin>

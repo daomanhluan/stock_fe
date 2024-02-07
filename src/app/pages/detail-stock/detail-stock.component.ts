@@ -1,82 +1,52 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import { NzSelectSizeType } from 'ng-zorro-antd/select';
 import {
+  FindStockByCodeRequest,
   FindStockRequest,
   ObjectRecords,
-  StockCodeRequest,
   StockHistory,
   TemplateResponse,
 } from 'src/app/models/StockHistory.model';
 import { StockService } from 'src/app/stock.service';
 @Component({
-  selector: 'app-mystock',
-  templateUrl: './mystock.component.html',
-  styleUrls: ['./mystock.component.scss'],
+  selector: 'app-detail-stock',
+  templateUrl: './detail-stock.component.html',
+  styleUrls: ['./detail-stock.component.scss'],
 })
-export class MystockComponent implements OnInit {
-  constructor(private stockService: StockService, private datePipe: DatePipe) {}
-
-  checked = false;
-  indeterminate = false;
-  // listOfCurrentPageData: readonly ItemData[] = [];
-  // listOfData: readonly ItemData[] = [];
-  setOfCheckedId = new Set<number>();
+export class DetailStockComponent implements OnInit {
+  constructor(private stockService: StockService, private route: ActivatedRoute) {
+  }
+  ngOnInit(): void {
+    this.route.paramMap.subscribe((params: ParamMap) => {
+      this.code = params.get('code');
+    })
+    let req = {
+      page: this.page,
+      size: this.size,
+      code: this.code
+    };
+    this.loadData(req);
+  }
 
   responseStockHistory: TemplateResponse<ObjectRecords<StockHistory[]>>;
   objectRecordsStockHistory: ObjectRecords<StockHistory[]>;
   stockHistories: StockHistory[];
   total: number = 0;
   page: number = 1;
-  size: number = 20;
-  day: any;
+  size: number = 30;
+  code: any;
 
-  date = new Date();
+  date = null;
   pipe = new DatePipe('en-US');
-  listOfOption: Array<{ label: string; value: string }> = [];
-  sizes: NzSelectSizeType = 'default';
-  singleValue = 'a10';
-  multipleValue = ['a10', 'c12'];
-  tagValue = ['a10', 'c12', 'tag'];
-
-
-  onChange(result: Date): void {
-    const date = new Date(); // Replace this with your actual date
-    const formattedDate = this.datePipe.transform(result, 'dd/MM/yyyy');
-    this.day = formattedDate;
-    let req = {
-      page: this.page,
-      size: this.size,
-      day: this.day,
-    };
-    this.loadData(req);
-  }
-
-  onItemChecked(code: string, checked: boolean): void {
-    let req = {
-     code: code
-    };
-    this.stockService.followStock(req).subscribe((res)=>{
-
-    });
-    this.refreshCheckedStatus();
-  }
-
-  refreshCheckedStatus(): void {
-    this.checked = this.stockHistories.every((item) =>
-      this.setOfCheckedId.has(item.id)
-    );
-    this.indeterminate =
-      this.stockHistories.some((item) => this.setOfCheckedId.has(item.id)) &&
-      !this.checked;
-  }
 
   changePage(e: number): void {
     this.page = e;
     let req = {
-      page: this.page,
+      code: this.code,
       size: this.size,
-      day: this.day,
+      page: this.page
     };
     this.loadData(req);
   }
@@ -85,16 +55,15 @@ export class MystockComponent implements OnInit {
     this.size = e;
     this.page = 1;
     let req = {
-      page: this.page,
+      code: this.code,
       size: this.size,
-      day: this.day,
+      page: this.page
     };
     this.loadData(req);
   }
 
-  loadData(req: FindStockRequest) {
-    this.stockService.findHotStockToday(req).subscribe((res) => {
-      console.log('findStock: ' + res.success);
+  loadData(req: FindStockByCodeRequest) {
+    this.stockService.findStockHistoryByCode(req).subscribe((res) => {
       this.responseStockHistory = res;
       this.objectRecordsStockHistory = this.responseStockHistory.data!;
       this.stockHistories = this.objectRecordsStockHistory.records!;
@@ -149,7 +118,22 @@ export class MystockComponent implements OnInit {
             .toString()
             .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-        e.color = e.ceiling_price ? '#f23aff' : '#0bdf39';
+        e.color = e.price_fluctuation > 0 ? '#0bdf39' : '#ff0017';
+
+        if(e.price_fluctuation == 0){
+          e.color = "#0bdf39";
+        }
+        else if(e.price_fluctuation > 0 && e.price_fluctuation < 6.8){
+          e.color = "#0bdf39";
+        }else if(e.price_fluctuation >= 6.8 && e.price_fluctuation < 9 && e.ceiling_price){
+          e.color = "#f23aff";
+        }else if(e.price_fluctuation > 9 && e.ceiling_price){
+          e.color = "#f23aff";
+        }else if (e.price_fluctuation < 0 && e.price_fluctuation > -6.6){
+          e.color = "#ff0017";
+        }else if (e.price_fluctuation < -7.1){
+          e.color = "#00c9ff";
+        }
 
         if (e.rate_volume10_day > 1.8) {
           e.color_for_rate_volume_10_day = '#f23aff';
@@ -176,35 +160,9 @@ export class MystockComponent implements OnInit {
     let req = {
       page: this.page,
       size: this.size,
-      day: this.day,
+      code: this.code,
     };
     this.loadData((req));
-  }
-
-  ngOnInit(): void {
-
-    var dayOfWeek = this.date.getDay();
-    console.log(dayOfWeek);
-
-    var isWeekend = (dayOfWeek === 6) || (dayOfWeek  === 0);
-    if(isWeekend){
-      dayOfWeek === 6 ? this.date.setDate(this.date.getDate() - 1) : this.date.setDate(this.date.getDate() - 2);
-    }
-    const formattedDate = this.datePipe.transform(this.date, 'dd/MM/yyyy');
-    this.day = formattedDate;
-
-    let req = {
-      page: this.page,
-      size: this.size,
-      day: this.day
-    };
-    this.loadData(req);
-
-    const children: Array<{ label: string; value: string }> = [];
-    for (let i = 10; i < 36; i++) {
-      children.push({ label: i.toString(36) + i, value: i.toString(36) + i });
-    }
-    this.listOfOption = children;
   }
 
 

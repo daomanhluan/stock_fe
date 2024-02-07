@@ -1,0 +1,9 @@
+export const PURPLE_COLOR = "#f23aff";
+export const LIGHT_BLUE_COLOR = "#00c9ff";
+export const YELLOW_COLOR = "#fdff12";
+export const RED_COLOR = "#ff0017";
+export const GREEN_COLOR = "#0bdf39";
+
+export class GlobalConstant{
+  public static MAXIMUM_NUMBER = 10;
+}
